@@ -133,9 +133,9 @@ re-indenting a line."
 (define-derived-mode moonscript-mode prog-mode "MoonScript"
   "Major mode for editing MoonScript code."
   (setq font-lock-defaults '(moonscript-font-lock-defaults))
-  (set (make-local-variable 'indent-line-function) 'moonscript-indent-line)
-  (set (make-local-variable 'electric-indent-inhibit) t)
-  (set (make-local-variable 'comment-start) moonscript-comment-start)
+  (setq-local indent-line-function 'moonscript-indent-line)
+  (setq-local electric-indent-inhibit t)
+  (setq-local comment-start moonscript-comment-start)
   (modify-syntax-entry ?\- ". 12b" moonscript-mode-syntax-table)
   (modify-syntax-entry ?\n "> b" moonscript-mode-syntax-table)
   (modify-syntax-entry ?\_ "w" moonscript-mode-syntax-table))
