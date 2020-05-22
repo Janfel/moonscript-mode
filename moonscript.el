@@ -30,18 +30,12 @@
   :type 'string
   :safe 'stringp)
 
-(defvar moonscript-statement
-  '("return" "break" "continue"))
-
-(defvar moonscript-repeat
-  '("for" "while"))
-
-(defvar moonscript-conditional
-  '("if" "else" "elseif" "then" "switch" "when" "unless"))
-
-(defvar moonscript-keyword
-  '("export" "local" "import" "from" "with" "in" "and" "or" "not"
-    "class" "extends" "super" "using" "do"))
+(defcustom moonscript-interactive-indent-commands
+  '(indent-for-tab-command)
+  "Which commands should cycle indentation."
+  :group 'moonscript
+  :type '(repeat symbol)
+  :safe 'listp)
 
 (defvar moonscript-keywords
   '("for" "while"
@@ -79,43 +73,49 @@
     (,moonscript-table-key-regex      . font-lock-variable-name-face)
     ("!"                              . font-lock-warning-face)))
 
-(defun moonscript-indent-level (&optional blankval)
-  "Return nesting depth of current line.
+(defun moonscript--calculate-indent ()
+  "Calculate a sensible default indentation level."
+  (let ((oldindent (floor (current-indentation) moonscript-indent-offset))
+        (prevlineindent
+         (floor (save-excursion (forward-line -1) (current-indentation))
+                moonscript-indent-offset)))
+    (if (and (zerop oldindent) (not (zerop prevlineindent)))
+        prevlineindent
+      oldindent)))
 
-If BLANKVAL is non-nil, return that instead if the line is blank.
-Upon return, regexp match data is set to the leading whitespace."
-  (cl-assert (= (point) (point-at-bol)))
-  (looking-at "^[ \t]*")
-  (if (and blankval (= (match-end 0) (point-at-eol)))
-      blankval
-    (floor (/ (- (match-end 0) (match-beginning 0))
-              moonscript-indent-offset))))
+(defun moonscript--calculate-indent-interactive ()
+  "Calculate an indentation level for use with the TAB key."
+  (let ((oldindent (floor (current-indentation) moonscript-indent-offset))
+         (prevlineindent
+          (save-excursion
+            (beginning-of-line)
+            (skip-chars-backward " \t\r\n")
+            (if (eq (point) (point-min)) 0
+              (floor (current-indentation) moonscript-indent-offset)))))
+    (cond ((eq oldindent prevlineindent) (1+ prevlineindent))
+          ((not (eq last-command this-command)) (max prevlineindent 1))
+          ;; These clauses only activate on repeated calls.
+          ((eq oldindent (1+ prevlineindent)) 0)
+          (t (1+ oldindent)))))
 
 (defun moonscript-indent-line ()
   "Cycle indentation levels for the current line of MoonScript code.
 
 Looks at how deeply the previous non-blank line is nested. The
 maximum indentation level for the current line is that level plus
-one.
-
-When computing indentation depth, one tab is currently considered
-equal to one space. Tabs are currently replaced with spaces when
-re-indenting a line."
-  (goto-char (point-at-bol))
-  (let ((curlinestart (point))
-        (prevlineindent -1))
-    ;; Find indent level of previous non-blank line.
-    (while (and (< prevlineindent 0) (> (point) (point-min)))
-      (goto-char (1- (point)))
-      (goto-char (point-at-bol))
-      (setq prevlineindent (moonscript-indent-level -1)))
-    ;; Re-indent current line based on what we know.
-    (goto-char curlinestart)
-    (let* ((oldindent (moonscript-indent-level))
-           (newindent (if (= oldindent 0) (1+ prevlineindent)
-                        (1- oldindent))))
-      (replace-match (make-string (* newindent moonscript-indent-offset)
-                                  ? )))))
+one."
+  (let ((indent
+         (if (memq this-command moonscript-interactive-indent-commands)
+             (moonscript--calculate-indent-interactive)
+           (moonscript--calculate-indent)))
+        (inside-indent
+         (<= (- (point) (line-beginning-position)) (current-indentation))))
+    (save-excursion
+      (beginning-of-line)
+      (skip-chars-forward " \t")
+      (delete-region (line-beginning-position) (point))
+      (indent-to (* indent moonscript-indent-offset)))
+    (when inside-indent (back-to-indentation))))
 
 ;;;###autoload
 (define-derived-mode moonscript-mode prog-mode "MoonScript"
