@@ -16,14 +16,8 @@ This mode started out as a modification of stuff found in
 
 ## Installation
 
-### From MELPA
-
-The easiest way to get the mode is to install the `moonscript` package from the [MELPA](https://melpa.org/) package archive.
-
-### Manual
-
     $ cd ~/.emacs.d/vendor
-    $ git clone https://github.com/k2052/moonscript-mode.git
+    $ git clone https://github.com/Janfel/moonscript-mode.git
 
 And add following to your .emacs file:
 
@@ -43,8 +37,3 @@ then hit:
 to activate.
 
 Improvements and more docs will come as we need them.
-
-### Support
-
-If you found this repo useful please consider supporting me on [Gittip](https://www.gittip.com/k2052) or sending me some
-bitcoin `1csGsaDCFLRPPqugYjX93PEzaStuqXVMu`
