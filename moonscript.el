@@ -137,8 +137,8 @@ re-indenting a line."
   (setq-local electric-indent-inhibit t)
   (setq-local comment-start moonscript-comment-start)
   (modify-syntax-entry ?\- ". 12b" moonscript-mode-syntax-table)
-  (modify-syntax-entry ?\n "> b" moonscript-mode-syntax-table)
-  (modify-syntax-entry ?\_ "w" moonscript-mode-syntax-table))
+  (modify-syntax-entry ?\n "> b"   moonscript-mode-syntax-table)
+  (modify-syntax-entry ?\_ "w"     moonscript-mode-syntax-table))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.moon\\'" . moonscript-mode))
