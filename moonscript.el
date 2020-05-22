@@ -44,49 +44,38 @@
     "class" "extends" "super" "using" "do"))
 
 (defvar moonscript-keywords
-  (append moonscript-statement moonscript-repeat moonscript-conditional moonscript-keyword))
+  '("for" "while"
+    ;; Conditionals
+    "if" "else" "elseif" "then" "switch" "when" "unless"
+    ;; Statements.
+    "return" "break" "continue"
+    ;; Regular keywords.
+    "export" "local" "import" "from" "with" "in" "and"
+    "or" "not" "class" "extends" "super" "using" "do"))
 
-(defvar moonscript-constants
-  '("nil" "true" "false" "self"))
+(defvar moonscript-constants         '("nil" "true" "false" "self"))
+(defvar moonscript-function-keywords '("->" "=>" "(" ")" "[" "]" "{" "}"))
 
-(defvar moonscript-keywords-regex (regexp-opt moonscript-keywords 'symbols))
-
-(defvar moonscript-constants-regex (regexp-opt moonscript-constants 'symbols))
-
-(defvar moonscript-class-name-regex "\\<[A-Z]\\w*\\>")
-
-(defvar moonscript-function-keywords
-  '("->" "=>" "(" ")" "[" "]" "{" "}"))
-(defvar moonscript-function-regex (regexp-opt moonscript-function-keywords))
-
-(defvar moonscript-octal-number-regex
-  "\\_<0x[[:xdigit:]]+\\_>")
-
-(defvar moonscript-table-key-regex
-  "\\_<\\w+:")
-
-(defvar moonscript-ivar-regex
-  "@\\_<\\w+\\_>")
-
-(defvar moonscript-assignment-regex
-  "\\([-+/*%]\\|\\.\\.\\)?=")
-
-(defvar moonscript-number-regex
-  (mapconcat 'identity '("[0-9]+\\.[0-9]*" "[0-9]*\\.[0-9]+" "[0-9]+") "\\|"))
-
-(defvar moonscript-assignment-var-regex
-  (concat "\\(\\_<\\w+\\) = "))
-
+(defvar moonscript-assignment-regex     "\\([-+/*%]\\|\\.\\.\\)?=")
+(defvar moonscript-assignment-var-regex "\\(\\_<\\w+\\) = ")
+(defvar moonscript-class-name-regex     "\\<[A-Z]\\w*\\>")
+(defvar moonscript-constants-regex      (regexp-opt moonscript-constants 'symbols))
+(defvar moonscript-function-regex       (regexp-opt moonscript-function-keywords))
+(defvar moonscript-ivar-regex           "@\\_<\\w+\\_>")
+(defvar moonscript-keywords-regex       (regexp-opt moonscript-keywords 'symbols))
+(defvar moonscript-number-regex         "[0-9]+\\.[0-9]*\\|[0-9]*\\.[0-9]+\\|[0-9]+")
+(defvar moonscript-octal-number-regex   "\\_<0x[[:xdigit:]]+\\_>")
+(defvar moonscript-table-key-regex      "\\_<\\w+:")
 (defvar moonscript-font-lock-defaults
-  `((,moonscript-class-name-regex     . font-lock-type-face)
-    (,moonscript-function-regex       . font-lock-function-name-face)
-    (,moonscript-assignment-regex     . font-lock-preprocessor-face)
-    (,moonscript-constants-regex      . font-lock-constant-face)
-    (,moonscript-keywords-regex       . font-lock-keyword-face)
-    (,moonscript-ivar-regex           . font-lock-variable-name-face)
+  `((,moonscript-assignment-regex     . font-lock-preprocessor-face)
     (,moonscript-assignment-var-regex . (1 font-lock-variable-name-face))
-    (,moonscript-octal-number-regex   . font-lock-constant-face)
+    (,moonscript-class-name-regex     . font-lock-type-face)
+    (,moonscript-constants-regex      . font-lock-constant-face)
+    (,moonscript-function-regex       . font-lock-function-name-face)
+    (,moonscript-ivar-regex           . font-lock-variable-name-face)
+    (,moonscript-keywords-regex       . font-lock-keyword-face)
     (,moonscript-number-regex         . font-lock-constant-face)
+    (,moonscript-octal-number-regex   . font-lock-constant-face)
     (,moonscript-table-key-regex      . font-lock-variable-name-face)
     ("!"                              . font-lock-warning-face)))
 
